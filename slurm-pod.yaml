@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: slurmctld-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: slurmctld
+  template:
+    metadata:
+      labels:
+        app: slurmctld
+    spec:
+      volumes:
+        - name: slurm-state-volume
+          persistentVolumeClaim:
+            claimName: slurm-state-pvc
+      containers:
+        - name: slurmctld
+          image: badreddine970/slurmctld:latest
+          command: ["sh", "-c", "gosu munge /usr/sbin/munged && exec gosu slurm /usr/sbin/slurmctld -i -Dvvv"]
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+          volumeMounts:
+            - name: slurm-state-volume
+              mountPath: /tmp
+      hostname: slurmctld
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: slurmctld-service
+spec:
+  selector:
+    app: slurmctld
+  ports:
+    - name: slurmctld-port
+      protocol: TCP
+      port: 6817
+    - name: slurmd-port
+      protocol: TCP
+      port: 6818
+  type: LoadBalancer
+  loadBalancerIP: xxxxxxxxxxx
