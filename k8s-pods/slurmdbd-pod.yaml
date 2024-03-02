@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: slurmdbd-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: slurmdbd
+  template:
+    metadata:
+      labels:
+        app: slurmdbd
+    spec:
+      volumes:
+        - name: slurm-state-volume
+          persistentVolumeClaim:
+            claimName: slurm-state-pvc
+      containers:
+        - name: mysql
+          image: mariadb:10.10
+          env:
+          - name: MYSQL_RANDOM_ROOT_PASSWORD
+            value: "yes"
+          - name: MYSQL_DATABASE
+            value: slurm_acct_db
+          - name: MYSQL_USER
+            value: slurm
+          - name: MYSQL_PASSWORD
+            value: password
+          volumeMounts:
+          - name: var-lib-mysql
+            mountPath: /var/lib/mysql
+        volumes:
+        - name: var-lib-mysql
+          # Define the volume type and its source here
+          # e.g., emptyDir, hostPath, persistentVolumeClaim, etc.
+          # Assuming hostPath for demonstration purposes
+          hostPath:
+            path: /var/lib/mysql
+            type: DirectoryOrCreate
+        - name: slurmdbd
+          image: badreddine970/slurmdbd:latest
+          command:
+            - "sh"
+            - "-c"
+            - |
+              . /etc/slurm/slurmdbd.conf
+              check_database() {
+                until echo "SELECT 1" | mysql -h $StorageHost -u$StorageUser -p$StoragePass 2>&1 > /dev/null
+                do
+                  echo "-- Waiting for database to become active ..."
+                  sleep 2
+                done
+              }
+              echo "-- Checking database availability ..."
+              check_database
+              echo "-- Database is now active ..."
+              exec gosu slurm /usr/sbin/slurmdbd -Dvvv
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+          volumeMounts:
+            - name: slurm-state-volume
+              mountPath: /tmp
+      hostname: slurmdbd
+
+

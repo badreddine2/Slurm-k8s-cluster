@@ -1,50 +1,72 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: slurmctld-deployment
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: slurmctld
-  template:
-    metadata:
-      labels:
-        app: slurmctld
-    spec:
-      volumes:
-        - name: slurm-state-volume
-          persistentVolumeClaim:
-            claimName: slurm-state-pvc
-      containers:
-        - name: slurmctld
-          image: badreddine970/slurmctld:latest
-          command: ["sh", "-c", "gosu munge /usr/sbin/munged && exec gosu slurm /usr/sbin/slurmctld -i -Dvvv"]
-          resources:
-            limits:
-              memory: "512Mi"
-              cpu: "500m"
-            requests:
-              memory: "256Mi"
-              cpu: "100m"
-          volumeMounts:
-            - name: slurm-state-volume
-              mountPath: /tmp
-      hostname: slurmctld
----
 apiVersion: v1
 kind: Service
 metadata:
-  name: slurmctld-service
+  name: slurm-mysql-service
 spec:
   selector:
-    app: slurmctld
+    app: slurm-mysql
   ports:
-    - name: slurmctld-port
+    - name: mysql-port
       protocol: TCP
-      port: 6817
-    - name: slurmd-port
+      port: 3306  # Adjust the port number if needed
+    - name: slurmdbd-port
       protocol: TCP
-      port: 6818
-  type: LoadBalancer
-  loadBalancerIP: xxxxxxxxxxx
+      port: 6819  # Adjust the port number if needed
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: slurm-mysql
+spec:
+  hostname: slurmdbd
+  containers:
+    - name: mysql
+      image: mariadb:10.10
+      env:
+        - name: MYSQL_RANDOM_ROOT_PASSWORD
+          value: "yes"
+        - name: MYSQL_DATABASE
+          value: slurm_acct_db
+        - name: MYSQL_USER
+          value: slurm
+        - name: MYSQL_PASSWORD
+          value: password
+      volumeMounts:
+        - name: var-lib-mysql
+          mountPath: /var/lib/mysql
+    - name: slurmdbd
+      image: badreddine970/slurmdbd:latest
+      command:
+        - "sh"
+        - "-c"
+        - |
+          . /etc/slurm/slurmdbd.conf
+          check_database() {
+            until echo "SELECT 1" | mysql -h $StorageHost -u$StorageUser -p$StoragePass 2>&1 > /dev/null
+            do
+              echo "-- Waiting for database to become active ..."
+              sleep 2
+            done
+          }
+          echo "-- Checking database availability ..."
+          check_database
+          echo "-- Database is now active ..."
+          exec gosu slurm /usr/sbin/slurmdbd -Dvvv
+      resources:
+        limits:
+          memory: "512Mi"
+          cpu: "500m"
+        requests:
+          memory: "256Mi"
+          cpu: "100m"
+      volumeMounts:
+        - name: slurm-state-volume
+          mountPath: /tmp
+  volumes:
+    - name: var-lib-mysql
+      hostPath:
+        path: /var/lib/mysql
+        type: DirectoryOrCreate
+    - name: slurm-state-volume
+      persistentVolumeClaim:
+        claimName: slurm-state-pvc
