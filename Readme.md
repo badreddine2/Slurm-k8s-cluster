@@ -1,6 +1,6 @@
 # Slurm kubernetes Cluster
 
-Before starting the isntallation of the k8s-slurm cluster you must install the following :
+Before starting the installation of the k8s-slurm cluster you must install the following :
 
 * Install minikube : https://minikube.sigs.k8s.io/docs/start/
 * Install the kubectl tool : https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
