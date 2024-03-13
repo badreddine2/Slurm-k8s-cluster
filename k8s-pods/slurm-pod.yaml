@@ -40,6 +40,8 @@ spec:
         - "sh"
         - "-c"
         - |
+          sed -i "s/@storagehost@/$(hostname -i)/" /etc/slurm/slurmdbd.conf
+          sed -i "s/@storagehost@/$(hostname -i)/" /etc/slurm/slurm.conf   
           . /etc/slurm/slurmdbd.conf
           check_database() {
             until echo "SELECT 1" | mysql -h $StorageHost -u$StorageUser -p$StoragePass 2>&1 > /dev/null
@@ -51,6 +53,7 @@ spec:
           echo "-- Checking database availability ..."
           check_database
           echo "-- Database is now active ..."
+          gosu munge /usr/sbin/munged
           exec gosu slurm /usr/sbin/slurmdbd -Dvvv
       resources:
         limits:
