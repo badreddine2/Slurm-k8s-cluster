@@ -11,25 +11,67 @@
 
 \section{Introduction}
 \begin{itemize}
-    \item What is HPC, what it is used for, bare-metal aspects
+    \item What is HPC ?
+     
+HPC computing is a technology that uses clusters of powerful processors working in parallel to process massive multidimensional datasets (Big Data) and solve complex problems at extremely high speeds. HPC systems typically feature a large number of processors (CPUs or GPUs) working in parallel to perform tasks such as simulations, data analysis, and complex mathematical calculations.
+These systems are used in various fields including scientific research, engineering, weather forecasting, financial modeling, and more. HPC enables researchers and organizations to tackle problems that would be impractical or impossible to solve with conventional computing resources due to their scale and complexity.
+
+In an HPC (High-Performance Computing) cluster, there are typically two types of nodes: management nodes and computing nodes.
+
+Here's a brief explanation of each node:
+\begin{itemize}
+    \item Management Nodes:
+    
+The management node serves as the central control hub of an HPC cluster, hosting essential cluster management software, including Slurm. Slurm, is a highly configurable and widely used job scheduler and resource manager in HPC environments. Administrators interact with this node to submit, manage, and monitor computational tasks, allocate resources, and maintain overall cluster efficiency using Slurm's advanced approaches. Slurm provides a comprehensive set of features for managing workload scheduling, job prioritization, resource allocation, and accounting.
+
+Administrators utilize Slurm's commands and configuration files to define job submission policies, set resource limits, and manage user access permissions. Through Slurm, administrators can efficiently manage large-scale computational workloads, balance resource utilization across computing nodes, and ensure fair allocation of resources among users and projects.
+
+Furthermore, Slurm facilitates integration with other cluster management tools and software components, enabling seamless interoperability and automation of administrative tasks.
+
+
+    \item Computing Nodes:
+
+Computing nodes are the computational workhorses of an HPC cluster, responsible for executing parallelized tasks assigned by the job scheduler, such as Slurm. Equipped with high-performance processors, fast interconnects, and ample memory, computing nodes are optimized for handling complex computational workloads efficiently. The number and specifications of computing nodes vary based on cluster size, architecture, and application requirements.
+
+Slurm interacts closely with computing nodes to manage job execution, monitor resource usage, and enforce scheduling policies. When users submit computational tasks to the cluster, Slurm coordinates the allocation of resources, schedules job execution on available computing nodes, and monitors job progress.
+
+Moreover, Slurm supports parallel execution of tasks across multiple computing nodes, enabling scalable and efficient utilization of cluster resources. By distributing workload across compute nodes and leveraging parallel processing capabilities, Slurm accelerates scientific discovery, computational research, and data analysis workflows. Researchers and developers benefit from Slurm's ability to harness the computational power of HPC clusters, enabling them to tackle complex problems, simulate large-scale phenomena, and advance their fields of study.
+
+
+\end{itemize}
+    
+    \item CISM
+        \begin{itemize}
+            \item Presentation of the typical (bare-metal) architecture of an HPC cluster
+            \item LEMAITRE and MANNBACK
+            \item Management and Computing jobs (How many jobs per day?)
+        \end{itemize}
+    
     \item Problem statement and objectives
+        \begin{itemize}
+            \item Problems encountered and limitations for actual Management nodes
+            \item High Availability ?
+        \end{itemize}
     \item Research methodology, including the use of Kubernetes as the container management framework
-\item Remarks ! Make sure to distinguish between the management nodes and the nodes running the HPC jobs. It could be useful to have some numbers about how many jobs are managed by an HPC cluster such as the ones managed by CISM (e.g., number of jobs per day and some characteristics, number of worker machines, etc.)
-- You do not provide much detail about the problem statement: Make sure to have a convincing case for why it would make sense to manage the management nodes using a container management system rather than dedicating a few baremetal machines or VMs. Possibly, going through a few examples and scenarios can help here (e.g., handling of a machine fault, supporting a reconfiguration, scaling out the management cluster, etc.) to show why managing a fleet of containers can be more flexible.
+    \begin{itemize}
+          \item Introduction to Kubernetes and its potential role in managing high availability
+    \end{itemize}
 \end{itemize}
 
 \section{Review of High Availability Solutions in HPC Cluster }
 \begin{itemize}
-    \item Presentation of the typical (bare-metal) architecture of an HPC cluster
-    \item Introduction to Kubernetes and its potential role in managing high availability
+    \item  Kubernetes and HA
+    \item Proposed solution to solve encountered problems for HA
     \item Approaches to integrate slurm to kubernetes cluster (only the controll management part) 
-    \item Presentation of the bare metal architecture: focus on management nodes
            \begin{itemize}
             \item Over approach
+            \item  Distant
             \item Adjacent approach 
-            \item Under approach
+            \item Under approach       
         \end{itemize}
-    \item (Kubernetes, Slurm) architecture
+
+    \item Presentation of the solution : (Kubernetes, Slurm) architecture 
+
 \end{itemize}
 
 \section{Methodology}
