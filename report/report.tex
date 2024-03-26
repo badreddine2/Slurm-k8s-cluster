@@ -1,7 +1,7 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 
-\title{Study, Prototyping, and Analysis of High Availability Solutions for an HPC Cluster Using Kubernetes}
+\title{High Availability Solutions for HPC Clusters with Kubernetes}
 \author{ Badr-Eddine Aji}
 \date{}
 
@@ -13,65 +13,65 @@
 \begin{itemize}
     \item What is HPC ?
      
-HPC computing is a technology that uses clusters of powerful processors working in parallel to process massive multidimensional datasets (Big Data) and solve complex problems at extremely high speeds. HPC systems typically feature a large number of processors (CPUs or GPUs) working in parallel to perform tasks such as simulations, data analysis, and complex mathematical calculations.
-These systems are used in various fields including scientific research, engineering, weather forecasting, financial modeling, and more. HPC enables researchers and organizations to tackle problems that would be impractical or impossible to solve with conventional computing resources due to their scale and complexity.
-
-In an HPC (High-Performance Computing) cluster, there are typically two types of nodes: management nodes and computing nodes.
-
-Here's a brief explanation of each node:
 \begin{itemize}
-    \item Management Nodes:
-    
-The management node serves as the central control hub of an HPC cluster, hosting essential cluster management software, including Slurm. Slurm, is a highly configurable and widely used job scheduler and resource manager in HPC environments. Administrators interact with this node to submit, manage, and monitor computational tasks, allocate resources, and maintain overall cluster efficiency using Slurm's advanced approaches. Slurm provides a comprehensive set of features for managing workload scheduling, job prioritization, resource allocation, and accounting.
+    \item  Define the concept of High-Performance Computing (HPC) and its significance in scientific research and technological innovation
 
-Administrators utilize Slurm's commands and configuration files to define job submission policies, set resource limits, and manage user access permissions. Through Slurm, administrators can efficiently manage large-scale computational workloads, balance resource utilization across computing nodes, and ensure fair allocation of resources among users and projects.
-
-Furthermore, Slurm facilitates integration with other cluster management tools and software components, enabling seamless interoperability and automation of administrative tasks.
-
-
-    \item Computing Nodes:
-
-Computing nodes are the computational workhorses of an HPC cluster, responsible for executing parallelized tasks assigned by the job scheduler, such as Slurm. Equipped with high-performance processors, fast interconnects, and ample memory, computing nodes are optimized for handling complex computational workloads efficiently. The number and specifications of computing nodes vary based on cluster size, architecture, and application requirements.
-
-Slurm interacts closely with computing nodes to manage job execution, monitor resource usage, and enforce scheduling policies. When users submit computational tasks to the cluster, Slurm coordinates the allocation of resources, schedules job execution on available computing nodes, and monitors job progress.
-
-Moreover, Slurm supports parallel execution of tasks across multiple computing nodes, enabling scalable and efficient utilization of cluster resources. By distributing workload across compute nodes and leveraging parallel processing capabilities, Slurm accelerates scientific discovery, computational research, and data analysis workflows. Researchers and developers benefit from Slurm's ability to harness the computational power of HPC clusters, enabling them to tackle complex problems, simulate large-scale phenomena, and advance their fields of study.
-
+\end{itemize}
+    \item HPC Clusters: Management vs. Computing Nodes
+\begin{itemize}
+    \item   Discuss the distinction between managing HPC clusters and computing nodes, highlighting the different roles and requirements of these components.
 
 \end{itemize}
     
-    \item CISM
+    \item CISM :
         \begin{itemize}
+
             \item Presentation of the typical (bare-metal) architecture of an HPC cluster
             \item LEMAITRE and MANNBACK
             \item Management and Computing jobs (How many jobs per day?)
+
         \end{itemize}
     
-    \item Problem statement and objectives
+
+    \item The Role of Slurm in HPC Clusters:
+            \begin{itemize}
+            \item examine the crucial role of the Slurm job scheduler in managing jobs and resources within HPC clusters, emphasizing its importance for the smooth operation of these systems
+        \end{itemize}
+     \item Problem statement and objectives
         \begin{itemize}
             \item Problems encountered and limitations for actual Management nodes
-            \item High Availability ?
+            \item High Availability ? Persistent storage ? Financial aspect ?
         \end{itemize}
-    \item Research methodology, including the use of Kubernetes as the container management framework
+        
+    \item Introduction to Kubernetes and its Potential Role in Managing High Availability:
     \begin{itemize}
-          \item Introduction to Kubernetes and its potential role in managing high availability
+          \item  provide an overview of Kubernetes and its potential role in managing high availability within HPC clusters. 
+          \item Kubernetes offers a powerful framework for orchestrating containerized applications and can potentially enhance the availability and resilience of HPC environments.
     \end{itemize}
-\end{itemize}
-
-\section{Review of High Availability Solutions in HPC Cluster }
-\begin{itemize}
-    \item  Kubernetes and HA
-    \item Proposed solution to solve encountered problems for HA
-    \item Approaches to integrate slurm to kubernetes cluster (only the controll management part) 
-           \begin{itemize}
+   \item  Possibility to Explore Slurm (Management Node) to Kubernetes and its Different Approaches:
+    \begin{itemize}
+    \item consider the possibility of integrating Slurm, particularly its management node, with Kubernetes. This exploration could lead to various approaches for enhancing the management and efficiency of HPC clusters, which will be a focus
+        \begin{itemize}
             \item Over approach
             \item  Distant
             \item Adjacent approach 
             \item Under approach       
         \end{itemize}
+    \end{itemize}
 
-    \item Presentation of the solution : (Kubernetes, Slurm) architecture 
+\end{itemize}
 
+\section{Review of High Availability Solutions in HPC Cluster }
+\begin{itemize}
+    \item  Kubernetes-slurm, which approach ?
+    \item Proposed solution to solve encountered problems for HA
+    \item the use of Kubernetes as the container management framework 
+
+    \item Presentation of the solution :
+        \begin{itemize}
+            \item (Kubernetes, Slurm) architecture
+            \item Discuss the High Availability of management node + persistent storage volume provided by Kubernetes
+        \end{itemize}
 \end{itemize}
 
 \section{Methodology}
@@ -87,14 +87,16 @@ Moreover, Slurm supports parallel execution of tasks across multiple computing n
     \item Ensure communication with K8S cluster and external resources
         \begin{itemize}
             \item Load balancer service
-            \item Make the load balancer IP static
-            \item Persistent memory
+            \item Make the load balancer IP static (using metalLB loadbalancer) 
+            \item Persistent storage (PVC + PV ---> need of local storage or Rook-Ceph 
         \end{itemize}
     \item Methods for High availability analysis
         \begin{itemize}
             \item Deployment infrastructure as code (Ansible vs HelmChart)
             \item Keep the cluster running despite issues and anomalies that may occur (having a backup)
             \item Persistence of the data required by the management services
+            
+            
         \end{itemize}
 \end{itemize}
 
@@ -106,10 +108,7 @@ Moreover, Slurm supports parallel execution of tasks across multiple computing n
             \item Test K8s cluster HA, with scenarios 
         \end{itemize}
     \item Comparison with current state
-           \begin{itemize}
-            \item Financial aspect
-            \item Reusing old servers and implementing high availability (HA) with Kubernetes.
-        \end{itemize}
+
 \end{itemize}
 
 \section{Discussion}
