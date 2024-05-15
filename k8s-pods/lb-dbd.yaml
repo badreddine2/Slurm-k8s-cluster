@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: slurmdbd-lb
+spec:
+  selector:
+    app: slurm-mysql
+  ports:
+    - name: slurmdbd-port
+      protocol: TCP
+      port: 6819
+      targetPort: 6819
+  type: LoadBalancer

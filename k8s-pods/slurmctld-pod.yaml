@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: slurmctld-deployment
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: slurmctld
@@ -12,13 +12,9 @@ spec:
       labels:
         app: slurmctld
     spec:
-      volumes:
-        - name: slurm-state-volume
-          persistentVolumeClaim:
-            claimName: slurm-state-pvc
       containers:
         - name: slurmctld
-          image: badreddine970/slurmctld:latest
+          image: badreddine970/slurmctld-prod:latest
           command: ["sh", "-c", "gosu munge /usr/sbin/munged && exec gosu slurm /usr/sbin/slurmctld -i -Dvvv"]
           resources:
             limits:
@@ -29,13 +25,18 @@ spec:
               cpu: "100m"
           volumeMounts:
             - name: slurm-state-volume
-              mountPath: /tmp
+              mountPath: /tmp   # Specify the mount path inside the container
+      volumes:
+        - name: slurm-state-volume
+          persistentVolumeClaim:
+            claimName: nfs-pvc  # Specify the name of your PVC here
       hostname: slurmctld
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: slurmctld-service
+  name: slurm
 spec:
   selector:
     app: slurmctld
@@ -44,7 +45,7 @@ spec:
       protocol: TCP
       port: 6817
       targetPort: 6817
-      nodePort: 30001 
+      nodePort: 30001
     - name: slurmd-port
       protocol: TCP
       port: 6818
@@ -55,5 +56,4 @@ spec:
       port: 6819
       targetPort: 6819
       nodePort: 30003
-  type: NodePort
-
+  type: LoadBalancer

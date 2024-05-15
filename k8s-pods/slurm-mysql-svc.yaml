@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: slurmdbd-service
+spec:
+  selector:
+    app: slurm-mysql   # Assurez-vous que le libellé est correct
+  ports:
+    - protocol: TCP
+      port: 6819       # Port utilisé par slurmdbd
+      targetPort: 6819

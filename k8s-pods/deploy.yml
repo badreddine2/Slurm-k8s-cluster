@@ -1,0 +1,69 @@
+---
+- name: Deploy Manifests
+  hosts: localhost
+  gather_facts: no
+  tasks:
+
+    - debug:
+        msg: "Start deployment"
+
+    - name: Create MetalLB namespace
+      command: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/namespace.yaml
+
+    - name: Install MetalLB CRDs
+      command: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/metallb.yaml
+      ignore_errors: True
+
+    - name: Deploy metalLB configuration
+      command: kubectl apply -f metallb-config.yaml
+
+    - name: Apply storageclass 
+      command: kubectl apply -f storageclass.yaml
+
+    - name: Apply persistent volume
+      command: kubectl apply -f pv.yaml
+
+    - name: Apply persistent volume claim
+      command: kubectl apply -f pvc.yaml
+
+    - name: Apply slurmdb.yaml
+      command: kubectl apply -f slurmdb.yaml
+
+    - name: Service to ensure communication between Slurmctld and slurmdbd
+      command: kubectl apply -f slurm-mysql-svc.yaml
+
+    - name: Wait for slurmdbd to be running
+      command: kubectl wait --for=condition=Ready pod -l app=slurm-mysql --timeout=300s
+      register: wait_result
+      retries: 10
+      delay: 30
+      until: wait_result is succeeded
+
+    - name: Deploy slurmctld pod
+      command: kubectl apply -f slurmctld-pod.yaml
+      when: wait_result is succeeded
+
+    - name: Deploy loadbalancer service for slurmdbd
+      command: kubectl apply -f lb-dbd.yaml
+      when: wait_result is succeeded
+  
+    - name: Wait for slurmctld to be running
+      command: kubectl wait --for=condition=Ready pod -l app=slurmctld --timeout=300s
+      register: result
+      retries: 10
+      delay: 30
+      until: result is succeeded
+
+    - name: Execute sinfo command
+      command: sinfo
+      register: sinfo_output
+      when: result is succeeded
+
+    - name: Print sinfo output
+      debug:
+        var: sinfo_output.stdout
+    
+    - debug:
+        msg: "Deployment finished"
+      when: result is succeeded
+

@@ -88,3 +88,7 @@ kubectl exec -it <pod_name> -c <container_name> -- /bin/bash
 
 ## Updating the Cluster
 
+
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/namespace.yaml
+
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/metallb.yaml

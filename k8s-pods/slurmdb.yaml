@@ -1,34 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: slurmdbd
+  name: slurm-mysql
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: slurmdbd
+      app: slurm-mysql
   template:
     metadata:
       labels:
-        app: slurmdbd
+        app: slurm-mysql
     spec:
-      # volumes:
-      #   - name: slurm-state-volume
-      #     persistentVolumeClaim:
-      #       claimName: slurm-state-pvc
-      #   - name: var-lib-mysql
-      #     hostPath:
-      #       path: /var/lib/mysql
-      #       type: DirectoryOrCreate
+      hostname: slurmdbd
       containers:
+        - name: mysql
+          image: mariadb:10.10
+          env:
+            - name: MYSQL_RANDOM_ROOT_PASSWORD
+              value: "yes"
+            - name: MYSQL_DATABASE
+              value: slurm_acct_db
+            - name: MYSQL_USER
+              value: slurm
+            - name: MYSQL_PASSWORD
+              value: password
         - name: slurmdbd
-          image: badreddine970/slurmdbd:latest
+          image: badreddine970/slurmctld-prod:latest
           command:
             - "sh"
             - "-c"
             - |
-              sed -i "s/@storagehost@/$(hostname -i)/" /etc/slurm/slurmdbd.conf
-              sed -i "s/@storagehost@/$(hostname -i)/" /etc/slurm/slurm.conf   
+              sed -i "s/@storagehost@/$(hostname -i)/" /etc/slurm/slurmdbd.conf 
+              sed -i "s/=slurmctld/=172.20.255.200/" /etc/slurm/slurm.conf 
               . /etc/slurm/slurmdbd.conf
               check_database() {
                 until echo "SELECT 1" | mysql -h $StorageHost -u$StorageUser -p$StoragePass 2>&1 > /dev/null
@@ -49,8 +53,3 @@ spec:
             requests:
               memory: "256Mi"
               cpu: "100m"
-          # volumeMounts:
-          #   - name: slurm-state-volume
-          #     mountPath: /tmp
-          #   - name: var-lib-mysql
-          #     mountPath: /var/lib/mysql
