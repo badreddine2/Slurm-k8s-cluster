@@ -46,14 +46,4 @@ spec:
       port: 6817
       targetPort: 6817
       nodePort: 30001
-    - name: slurmd-port
-      protocol: TCP
-      port: 6818
-      targetPort: 6818
-      nodePort: 30002
-    - name: slurmdbd-port
-      protocol: TCP
-      port: 6819
-      targetPort: 6819
-      nodePort: 30003
   type: LoadBalancer
