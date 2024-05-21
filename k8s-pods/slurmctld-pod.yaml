@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: slurmctld-deployment
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: slurmctld
@@ -36,7 +36,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: slurm
+  name: slurm-loadbalancer
 spec:
   selector:
     app: slurmctld
