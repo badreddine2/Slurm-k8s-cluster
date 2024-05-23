@@ -6,12 +6,13 @@
 
     - debug:
         msg: "Start deployment"
-
+    
     - name: Create MetalLB namespace
       command: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/namespace.yaml
 
     - name: Install MetalLB CRDs
       command: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/metallb.yaml
+      register: output
       ignore_errors: True
 
     - name: Deploy metalLB configuration
@@ -54,6 +55,10 @@
       delay: 30
       until: result is succeeded
 
+    - name: restart slurmd service
+      command: systemctl restart slurmd
+
+       
     - name: Execute sinfo command
       command: sinfo
       register: sinfo_output
