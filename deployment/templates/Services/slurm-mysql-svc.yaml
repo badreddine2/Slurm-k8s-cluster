@@ -4,8 +4,8 @@ metadata:
   name: slurmdbd-service
 spec:
   selector:
-    app: slurm-mysql   # Assurez-vous que le libellé est correct
+    app: slurm-mysql  
   ports:
     - protocol: TCP
-      port: 6819       # Port utilisé par slurmdbd
+      port: 6819  
       targetPort: 6819

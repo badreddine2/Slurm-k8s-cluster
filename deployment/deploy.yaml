@@ -16,22 +16,22 @@
       ignore_errors: True
 
     - name: Deploy metalLB configuration
-      command: kubectl apply -f metallb-config.yaml
+      command: kubectl apply -f "{{ service_path }}"/metallb-config.yaml
 
     - name: Apply storageclass 
-      command: kubectl apply -f storageclass.yaml
+      command: kubectl apply -f "{{ storage_path }}"/storageclass.yaml
 
     - name: Apply persistent volume
-      command: kubectl apply -f pv.yaml
+      command: kubectl apply -f "{{ storage_path }}"/pv.yaml
 
     - name: Apply persistent volume claim
-      command: kubectl apply -f pvc.yaml
+      command: kubectl apply -f "{{ storage_path }}"/pvc.yaml
 
     - name: Apply slurmdb.yaml
-      command: kubectl apply -f slurmdb.yaml
+      command: kubectl apply -f "{{ deployment_path }}"/slurmdb.yaml
 
     - name: Service to ensure communication between Slurmctld and slurmdbd
-      command: kubectl apply -f slurm-mysql-svc.yaml
+      command: kubectl apply -f "{{ service_path }}"/slurm-mysql-svc.yaml
 
     - name: Wait for slurmdbd to be running
       command: kubectl wait --for=condition=Ready pod -l app=slurm-mysql --timeout=300s
@@ -41,11 +41,11 @@
       until: wait_result is succeeded
 
     - name: Deploy slurmctld pod
-      command: kubectl apply -f slurmctld-pod.yaml
+      command: kubectl apply -f "{{ deployment_path }}"/slurmctld-pod.yaml
       when: wait_result is succeeded
 
     - name: Deploy loadbalancer service for slurmdbd
-      command: kubectl apply -f lb-dbd.yaml
+      command: kubectl apply -f "{{ service_path }}"/lb-dbd.yaml
       when: wait_result is succeeded
   
     - name: Wait for slurmctld to be running
@@ -71,4 +71,3 @@
     - debug:
         msg: "Deployment finished"
       when: result is succeeded
-
