@@ -14,8 +14,6 @@ plt.xlabel("Restarts")
 plt.ylabel("Time (seconds)")
 plt.legend()
 plt.grid(True)
-
-# Utiliser MaxNLocator pour forcer les valeurs de l'axe x à être des entiers
 plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 plt.ylim(0, 60)
 plt.show()
