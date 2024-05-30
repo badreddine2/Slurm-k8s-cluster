@@ -1,17 +1,23 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-restart_times = [6, 19, 34, 49, 93]
-restart_counts = list(range(0, len(restart_times)))
 
-mean_time = np.mean(restart_times)
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.ticker import MaxNLocator
 
-plt.figure(figsize=(10, 5))
+restart_times = [19, 34, 49, 93]
+restart_counts = list(range(1, len(restart_times)+1))
+
+plt.figure(figsize=(10, 4))
 plt.plot(restart_counts, restart_times, marker='o', linestyle='-', color='b', label='Restarting time')
-plt.axhline(y=mean_time, color='r', linestyle='--', label=f'Average= {mean_time} secondes')
 plt.title("Outage time due to Pod failure")
 plt.xlabel("Restarts")
 plt.ylabel("Time (seconds)")
 plt.legend()
 plt.grid(True)
+
+# Utiliser MaxNLocator pour forcer les valeurs de l'axe x à être des entiers
+plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
+
 plt.show()

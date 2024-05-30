@@ -100,3 +100,9 @@ mkdir -p /var/lib/slurmd
 mkdir -p /var/lib/mysql
 mount 192.168.49.1:/srv/nfs/kubedata /var/lib/slurmd
 mount 192.168.49.1:/srv/nfs/mysql /var/lib/mysql
+
+
+
+crictl ps | grep slurmctld-deployment-65cc57c487-mpmr5
+crictl inspect <pause-container-id>
+crictl inspect --output go-template --template '{{.info.pid}}' <pause-container-id>
