@@ -25,6 +25,9 @@ spec:
               value: slurm
             - name: MYSQL_PASSWORD
               value: password
+          volumeMounts:
+            - name: nfs-volume
+              mountPath: /var/lib/mysql
         - name: slurmdbd
           image: badreddine970/slurmctld-prod:latest
           command:
@@ -53,3 +56,20 @@ spec:
             requests:
               memory: "256Mi"
               cpu: "100m"
+      volumes:
+        - name: nfs-volume
+          persistentVolumeClaim:
+            claimName: nfs-pvc-mysql
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-pvc-mysql
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+  volumeName: nfs-pv-mysql

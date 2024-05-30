@@ -15,7 +15,11 @@ spec:
       containers:
         - name: slurmctld
           image: badreddine970/slurmctld-prod:latest
-          command: ["sh", "-c", "gosu munge /usr/sbin/munged && exec gosu slurm /usr/sbin/slurmctld -i -Dvvv"]
+          command: 
+            - sh
+            - -c
+            - |
+              echo '192.168.49.1 K8s-cluster' >> /etc/hosts && gosu munge /usr/sbin/munged && exec gosu slurm /usr/sbin/slurmctld -i -Dvvv
           resources:
             limits:
               memory: "512Mi"
@@ -24,12 +28,20 @@ spec:
               memory: "256Mi"
               cpu: "100m"
           volumeMounts:
-            - name: slurm-state-volume
-              mountPath: /tmp   # Specify the mount path inside the container
+            - mountPath: /var/lib/slurmd
+              name: test-volume
       volumes:
-        - name: slurm-state-volume
-          persistentVolumeClaim:
-            claimName: nfs-pvc  # Specify the name of your PVC here
+        - name: test-volume
+          nfs:
+            server: 192.168.49.1
+            path: /srv/nfs/kubedata
+      #     volumeMounts:
+      #       - name: nfs-volume
+      #         mountPath: /var/lib/slurmd
+      # volumes:
+      #   - name: nfs-volume
+      #     persistentVolumeClaim:
+      #       claimName: nfs-pvc
       hostname: slurmctld
 
 ---

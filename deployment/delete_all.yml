@@ -1,0 +1,19 @@
+---
+- name: Deploy Manifests
+  hosts: localhost
+  gather_facts: no
+  tasks:
+
+    - name: Delete all deployments
+      command: kubectl delete deployment --all
+
+    - name: Delete all pvc
+      command: kubectl delete pvc --all
+
+    - name: Delete all pv
+      command: kubectl delete pv --all      
+
+    - name: Delete all services
+      command: kubectl delete service --all
+
+

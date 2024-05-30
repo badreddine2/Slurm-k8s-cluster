@@ -1,0 +1,9 @@
+
+deployment_path: "templates/DeploymentConfig"
+service_path: "templates/Services"
+storage_path: "templates/Storage"
+host_ip: "192.168.49.1"
+nfs_path_slurmctld: "/srv/nfs/kubedata"
+nfs_path_mysql: "/srv/nfs/mysql"
+nfs_slurmctld_mount_path: "/var/lib/slurmd"
+nfs_mysql_mount_path: "/var/lib/mysql"
