@@ -1,4 +1,4 @@
-# Slurm kubernetes Cluster
+# Slurm kubernetes Cluster [WIP]
 
 Before starting the installation of the k8s-slurm cluster you must install the following :
 
